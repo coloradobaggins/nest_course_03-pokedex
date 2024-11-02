@@ -14,11 +14,12 @@ npm i
 npm i -g @nestjs/cli
 ```
 
-4. Levantar DB
+4. Levantar DB (cd directorio de proyecto)
+Se crea directorio mongo/ dentro de proyecto. Ver docker-compose.yaml
 ```
 docker-compose up -d
 ```
 
 ## STACK
-* Nest framework
+* NestJS framework
 * Mongodb
