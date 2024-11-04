@@ -84,21 +84,28 @@ export class PokemonService {
   }
 
   async remove(id: string) {
+    console.log(`Delete ID: ${id}`);
     /*
     //Busca por termino y elimina el encontrado
     let pokemon: Pokemon = await this.findOne(term);
     await pokemon.deleteOne();
     */
+    
+    const deletePokemon = await this.pokemonModel.deleteOne({_id: id});
 
-    //Por id / Validation PIPES
-    const pokemon = await this.findOne(id);
-    await pokemon.deleteOne();
+    if(deletePokemon.deletedCount === 0)
+      throw new BadRequestException(`Id: ${id} no fue encontrado.`);
+    
+    return deletePokemon;
   }
 
   private handleExceptions(err){
     console.log(`${err?.code} - ${err?.message}`);
     if(err?.code === 11000)
       throw new BadRequestException(`Este registro ya existe en la db, y debe ser unico`);
+
+    if(err?.code === 400)
+      throw new BadRequestException(``)
 
     throw new InternalServerErrorException(`Error al actualizar`);
   }
