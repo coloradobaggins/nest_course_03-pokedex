@@ -104,9 +104,6 @@ export class PokemonService {
     if(err?.code === 11000)
       throw new BadRequestException(`Este registro ya existe en la db, y debe ser unico`);
 
-    if(err?.code === 400)
-      throw new BadRequestException(``)
-
     throw new InternalServerErrorException(`Error al actualizar`);
   }
 }
