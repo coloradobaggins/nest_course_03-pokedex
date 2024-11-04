@@ -19,18 +19,17 @@ export class PokemonService {
       const pokemonCreated = await this.pokemonModel.create(createPokemonDto);
       return pokemonCreated;
     }catch(err){
-      if(err.code === 11000){
-        console.log(`ERROR... ${err.code} - ${err.message}`);
-        throw new BadRequestException(`Este registro ya existe enla db. No y Name deben ser unicos. ( ${JSON.stringify(err.keyValue)} )`);
-      }
-      console.log(err);
-      throw new InternalServerErrorException(`Error al crear registro en db. Check logs.`);
+      this.handleExceptions(err);
     }
     
   }
 
-  findAll() {
-    return `This action returns all pokemon`;
+  async findAll() {
+    let pokemons: Pokemon[] = [];
+    pokemons = await this.pokemonModel.find();
+    console.log(`Get all pokemons (documents)`);
+    console.log(pokemons)
+    return pokemons;
   }
 
   async findOne(term: string) {
@@ -61,26 +60,46 @@ export class PokemonService {
   }
 
   async update(term: string, updatePokemonDto: UpdatePokemonDto) {
-    
-    console.log(`UpdatePokemon term: ${term}`)
-    
 
-    let findPokemon = await this.findOne(term);
-    console.log(`FindedPokemon: `);
-    console.log(findPokemon);
-    if(updatePokemonDto.name)
-      updatePokemonDto.name = updatePokemonDto.name.toLowerCase();
-    const updatePokemon = await findPokemon.updateOne(updatePokemonDto, {new: true});
-    console.log(updatePokemon);
+    try{
+      console.log(`UpdatePokemon term: ${term}`)
+      let findPokemon = await this.findOne(term);
+      console.log(`FindedPokemon: `);
+      console.log(findPokemon);
+      if(updatePokemonDto.name)
+        updatePokemonDto.name = updatePokemonDto.name.toLowerCase();
 
-    //Return updated pokemon:
-    return {
-      ...findPokemon.toJSON(), ...updatePokemonDto
+      const updatePokemon = await findPokemon.updateOne(updatePokemonDto, {new: true});
+      console.log(updatePokemon);
+
+      //Return updated pokemon:
+      return {
+        ...findPokemon.toJSON(), ...updatePokemonDto
+      }
+
+    }catch(err){
+      this.handleExceptions(err);
     }
 
   }
 
-  remove(id: number) {
-    return `This action removes a #${id} pokemon`;
+  async remove(id: string) {
+    /*
+    //Busca por termino y elimina el encontrado
+    let pokemon: Pokemon = await this.findOne(term);
+    await pokemon.deleteOne();
+    */
+
+    //Por id / Validation PIPES
+    const pokemon = await this.findOne(id);
+    await pokemon.deleteOne();
+  }
+
+  private handleExceptions(err){
+    console.log(`${err?.code} - ${err?.message}`);
+    if(err?.code === 11000)
+      throw new BadRequestException(`Este registro ya existe en la db, y debe ser unico`);
+
+    throw new InternalServerErrorException(`Error al actualizar`);
   }
 }
