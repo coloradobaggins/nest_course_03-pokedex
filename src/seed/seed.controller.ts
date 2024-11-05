@@ -8,6 +8,6 @@ export class SeedController {
 
   @Post()
   runSeed() {
-    return this.seedService.runSeed(10);
+    return this.seedService.runSeed(700);
   }
 }
