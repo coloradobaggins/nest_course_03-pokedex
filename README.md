@@ -5,7 +5,7 @@
 # Ejecutar en development mode
 
 1. Clone repo
-2. Ejecutar
+2. Instalar
 ```
 npm i
 ```
@@ -18,6 +18,11 @@ npm i -g @nestjs/cli
 Se crea directorio mongo/ dentro de proyecto. Ver docker-compose.yaml
 ```
 docker-compose up -d
+```
+
+5. Ejecutar (dev)
+```
+npm run start:dev
 ```
 
 ## STACK
