@@ -4,6 +4,7 @@ import {
   InternalServerErrorException,
   NotFoundException,
 } from '@nestjs/common';
+import { ConfigService } from '@nestjs/config';
 import { CreatePokemonDto } from './dto/create-pokemon.dto';
 import { UpdatePokemonDto } from './dto/update-pokemon.dto';
 import { isValidObjectId, Model } from 'mongoose';
@@ -13,10 +14,18 @@ import { PaginationDto } from 'src/common/dto/pagination.dto';
 
 @Injectable()
 export class PokemonService {
+
+  private defaultLimit: number;
+  private defaultOffset: number;
+
   constructor(
     @InjectModel(Pokemon.name)
     private readonly pokemonModel: Model<Pokemon>,
-  ) {}
+    private readonly configService: ConfigService,
+  ) {
+    this.defaultLimit = this.configService.get<number>('paginationDefaultLimit') || 5;
+    this.defaultOffset = this.configService.get<number>('paginationDefaultOffset') || 0;
+  }
 
   async create(createPokemonDto: CreatePokemonDto) {
     try {
@@ -29,7 +38,7 @@ export class PokemonService {
   }
 
   async findAll(paginationDto: PaginationDto) {
-    const { limit = 10, offset = 0 } = paginationDto;
+    const { limit = this.defaultLimit, offset = this.defaultOffset } = paginationDto;
     let pokemons: Pokemon[] = [];
 
     //Ordeno asc segun no de elemento pokemon
@@ -39,7 +48,7 @@ export class PokemonService {
     .sort({
       no: 1,
     })
-    .select('-__v');  //Evito trae version de cada objeto pokemon
+    .select('-__v');  //Evito trae version de cada objeto pokemon (deselecciono)
     return pokemons;
   }
 
