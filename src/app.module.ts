@@ -17,7 +17,9 @@ import { appConfiguration } from './config/app.configuration';
     ServeStaticModule.forRoot({
       rootPath: join(__dirname, '..', 'public'),
     }),
-    MongooseModule.forRoot(process.env.MONGODB), //Conexion
+    MongooseModule.forRoot(process.env.MONGODB_STR, {
+      dbName: `${process.env.MONGODB_NAME}`,
+    }), //Conexion
     PokemonModule, CommonModule, SeedModule
   ],
 })
